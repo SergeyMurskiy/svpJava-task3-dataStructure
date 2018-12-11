@@ -9,35 +9,40 @@ import java.util.Set;
  */
 public class HashMap<K, V> implements Map<K, V> {
     private HashTable hashTable;
+
     public HashMap() {
         hashTable = new HashTable();
     }
 
+    public HashMap(int capacity) {
+        hashTable = new HashTable(capacity);
+    }
+
     public int size() {
-        return 0;
+        return hashTable.size();
     }
 
     public boolean isEmpty() {
-        return false;
+        return hashTable.size() == 0;
     }
 
     public boolean containsKey(Object key) {
-        return false;
+        return hashTable.containsKey(key);
     }
 
     public V get(Object key) {
-        return null;
+        return (V) hashTable.get(key);
     }
 
     public V put(K key, V value) {
-        return null;
+        return (V) hashTable.put(key, value);
+    }
+
+    public V remove(Object key) {
+        return (V) hashTable.remove(key);
     }
 
     //Unsupported operations
-    public V remove(Object key) {
-        throw new UnsupportedOperationException();
-    }
-
     public boolean containsValue(Object value) {
         throw new UnsupportedOperationException();
     }

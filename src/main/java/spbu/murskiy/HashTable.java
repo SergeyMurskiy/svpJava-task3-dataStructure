@@ -9,106 +9,114 @@ public class HashTable<K, V> {
 
     private final int minCapacity = 10;
     private int capacity;
-    private Entry<K, V>[] table;
+    private ArrayList<Entry<K, V>>[] table;
     private int size;
 
-    //Инициализация по умолчанию
     public HashTable() {
         capacity = minCapacity;
-        table = new Entry[10];
+        table = new ArrayList[10];
+        size = 0;
     }
 
-    //Инициализация с заданием размера
     public HashTable(int capacity) {
         if (capacity < minCapacity) {
             capacity = minCapacity;
-            table = new Entry[capacity];
+            table = new ArrayList[capacity];
         } else {
             this.capacity = capacity;
-            table = new Entry[capacity];
+            table = new ArrayList[capacity];
         }
+        size = 0;
     }
 
-    //Добавление элемента
-    public void put(K key, V value) {
-        int hash = key.hashCode();
+    public V put(K key, V value) {
+        int hash = hash(key);
         int index = hash % capacity;
-        Entry<K, V> newEntry = table[index];
-        if (newEntry == null) {
-            newEntry = new Entry<K, V>(hash, key, value);
-            table[index] = newEntry;
-        } else {
-            int keyIndex = newEntry.indexOfKey(key);
-           /* if (keyIndex != -1 && hash) {
-               newEntry.setValue(keyIndex, value);
-            } else {
-                newEntry.addElement(key, value);
-            }*/
+        Entry<K, V> newEntry = new Entry<K, V>(hash, key, value);
+        if (table[index] == null) {
+            table[index] = new ArrayList<Entry<K, V>>();
         }
-        size++;
-    }
-    public int size() {
-        return size;
-    }
-    public V get(K key) {
-        int index = key.hashCode() % capacity;
-        Entry<K, V> entry = table[index];
-        if (entry == null) {
-            return null;
-        } else {
-            int indexOfValue = entry.indexOfKey(key);
-            if (indexOfValue == -1) {
-                return null;
-            } else {
-                return entry.values.get(indexOfValue);
+        ArrayList<Entry<K, V>> entries = table[index];
+        for (int i = 0; i < entries.size(); i++) {
+            if (hash == entries.get(i).hash && key.equals(entries.get(i).key)) {
+                V oldValue = entries.get(i).value;
+                entries.set(i, newEntry);
+                return oldValue;
             }
         }
+        entries.add(newEntry);
+        size++;
+        return null;
+    }
+
+    public V get(K key) {
+        int hash = hash(key);
+        int index = hash % capacity;
+        ArrayList<Entry<K, V>> entries = table[index];
+        if (entries != null) {
+            for (int i = 0; i < entries.size(); i++) {
+                if (hash == entries.get(i).hash && key.equals(entries.get(i).key)) {
+                    return entries.get(i).value;
+                }
+            }
+        }
+        return null;
     }
 
     public V remove(K key) {
-        int index = key.hashCode() % capacity;
-        Entry<K, V> entry = table[index];
-        if (entry == null) {
-            return null;
-        } else {
-            int indexOfValue = entry.indexOfKey(key);
-            if (indexOfValue == -1) {
-                return null;
-            } else {
-                size--;
-                return entry.remove(index);
+        int hash = hash(key);
+        int index = hash % capacity;
+        ArrayList<Entry<K, V>> entries = table[index];
+        if (entries != null) {
+            for (int i = 0; i < entries.size(); i++) {
+                if (hash == entries.get(i).hash && key.equals(entries.get(i).key)) {
+                    V result = entries.get(i).value;
+                    entries.remove(i);
+                    size--;
+                    return result;
+                }
             }
         }
+        return null;
+    }
+
+    public boolean containsKey(K key) {
+        int hash = hash(key);
+        int index = hash % capacity;
+        ArrayList<Entry<K, V>> entries = table[index];
+        if (entries != null) {
+            for (int i = 0; i < entries.size(); i++) {
+                if (hash == entries.get(i).hash && key.equals(entries.get(i).key)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public int hash(K key) {
+        int hash;
+        if (key == null) {
+            hash = 0;
+        } else {
+            hash = key.hashCode();
+        }
+        return hash;
     }
 
     private class Entry<K, V> {
-        protected int hash;
-        protected ArrayList<K> keys;
-        protected ArrayList<V> values;
+        private int hash;
+        private K key;
+        private V value;
 
         public Entry(int hash, K key, V value) {
             this.hash = hash;
-            keys = new ArrayList<K>();
-            values = new ArrayList<V>();
-            addElement(key, value);
-        }
-
-        public void addElement(K key, V value) {
-            keys.add(key);
-            values.add(value);
-        }
-
-        public int indexOfKey(K key) {
-            return keys.indexOf(key);
-        }
-
-        public void setValue (int index, V value) {
-            values.set(index, value);
-        }
-
-        public V remove(int index) {
-            keys.remove(index);
-            return values.remove(index);
+            this.key = key;
+            this.value = value;
         }
     }
 }
