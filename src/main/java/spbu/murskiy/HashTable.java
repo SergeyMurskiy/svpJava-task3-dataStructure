@@ -11,10 +11,9 @@ public class HashTable<K, V> {
     private int capacity;
     private ArrayList<Entry<K, V>>[] table;
     private int size;
-
     public HashTable() {
         capacity = minCapacity;
-        table = new ArrayList[10];
+        table = new ArrayList[minCapacity];
         size = 0;
     }
 
@@ -32,13 +31,13 @@ public class HashTable<K, V> {
     public V put(K key, V value) {
         int hash = hash(key);
         int index = hash % capacity;
-        Entry<K, V> newEntry = new Entry<K, V>(hash, key, value);
+        Entry<K, V> newEntry = new Entry<K, V>(key, value);
         if (table[index] == null) {
             table[index] = new ArrayList<Entry<K, V>>();
         }
         ArrayList<Entry<K, V>> entries = table[index];
         for (int i = 0; i < entries.size(); i++) {
-            if (hash == entries.get(i).hash && key.equals(entries.get(i).key)) {
+            if (key.equals(entries.get(i).key)) {
                 V oldValue = entries.get(i).value;
                 entries.set(i, newEntry);
                 return oldValue;
@@ -55,7 +54,7 @@ public class HashTable<K, V> {
         ArrayList<Entry<K, V>> entries = table[index];
         if (entries != null) {
             for (int i = 0; i < entries.size(); i++) {
-                if (hash == entries.get(i).hash && key.equals(entries.get(i).key)) {
+                if (key.equals(entries.get(i).key)) {
                     return entries.get(i).value;
                 }
             }
@@ -69,7 +68,7 @@ public class HashTable<K, V> {
         ArrayList<Entry<K, V>> entries = table[index];
         if (entries != null) {
             for (int i = 0; i < entries.size(); i++) {
-                if (hash == entries.get(i).hash && key.equals(entries.get(i).key)) {
+                if (key.equals(entries.get(i).key)) {
                     V result = entries.get(i).value;
                     entries.remove(i);
                     size--;
@@ -86,7 +85,7 @@ public class HashTable<K, V> {
         ArrayList<Entry<K, V>> entries = table[index];
         if (entries != null) {
             for (int i = 0; i < entries.size(); i++) {
-                if (hash == entries.get(i).hash && key.equals(entries.get(i).key)) {
+                if (key.equals(entries.get(i).key)) {
                     return true;
                 }
             }
@@ -109,12 +108,10 @@ public class HashTable<K, V> {
     }
 
     private class Entry<K, V> {
-        private int hash;
         private K key;
         private V value;
 
-        public Entry(int hash, K key, V value) {
-            this.hash = hash;
+        public Entry(K key, V value) {
             this.key = key;
             this.value = value;
         }
